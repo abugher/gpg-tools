@@ -30,7 +30,9 @@ libs=(
 )
 
 
-if ! cd "${0%/bin/*}"; then
+self_path="$(readlink -m "${0}")"
+project_dir="${self_path%/bin/*}"
+if ! cd "${project_dir}"; then
   printf '%s\n' 'Error:  Failed to enter project directory.'
   exit 1
 fi
