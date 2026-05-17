@@ -1,0 +1,31 @@
+#!/bin/bash
+#
+# To write a script using these libraries, make a copy of this script, place it
+# in bin/, and extend it.  See further comments for recommended additions.
+
+
+# Add library names, without the '.sh' suffix, here.
+libs=(
+  'utilities'
+  'gpg-generic'
+)
+
+
+if ! cd "${0%/bin/*}"; then
+  printf '%s\n' 'Error:  Failed to enter project directory.'
+  exit 1
+fi
+
+
+if ! source lib/source_libraries.sh; then
+  printf '%s\n' 'Error:  Failed to source libraries.'
+  exit 1
+fi
+
+
+function main() {
+  # Write new code here, using the functions defined in the libraries.
+}
+
+
+main "${@}"

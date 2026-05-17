@@ -1,0 +1,65 @@
+#!/bin/bash
+#
+# update-key-debian <signature_file>
+#
+# This script is intended to be used by a mail client to get the public key for
+# a developer or maintainer in order to validate a signed message.
+#
+# This will automatically add and sign a key in the user-specific PGP keyring.
+# Scope should be limited to email addresses at a specific domain.
+#
+# The key will be downloaded from the distribution's key server and signed only
+# if it is not present in the keyring already.  I think that is the only way I
+# have available to verify a developer or maintainer key.  
+#
+# If a key is already present, it will not be signed.  Ideally, this script
+# could refresh the key from the server, or download an additional key
+# associated with the same email, and sign only the key downloaded from the key
+# server.  That seems more complex, and therefore both more difficult and more
+# error prone.  I would not expect that case to come up, so it is not yet
+# handled.
+
+distro="debian"
+
+
+libs=(
+  'utilities'
+  'gpg-generic'
+  'gpg-mail'
+  "gpg-${distro}"
+)
+
+
+if ! cd "${0%/bin/*}"; then
+  printf '%s\n' 'Error:  Failed to enter project directory.'
+  exit 1
+fi
+
+
+#printf '%s\n' "DEBUG:  PWD=='${PWD}'" >&2
+
+
+if ! source lib/source_libraries.sh; then
+  printf '%s\n' 'Error:  Failed to source libraries.'
+  exit 1
+fi
+
+
+function main() {
+  signature_file="${1}"
+  if test '' == "${signature_file}"; then
+    fail "Specify one argument, a PGP signature file."
+  fi
+
+  if ! key_id="$(key_id_from_signature "${signature_file}")" || test '' == "${key_id}"; then
+    warn "signature_file='${signature_file}'"
+    warn "key_id=='${key_id}'"
+    fail "Failed to extract key ID from signature file:  '${signature_file}'"
+  fi
+
+  update_key "${key_id}" \
+    || fail "Failed to obtain or refresh key, signatures, and/or CRL for key ID:  '${key_id}'"
+}
+
+
+main "${@}"
