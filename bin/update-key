@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# update-key-debian <signature_file>
+# update-key <signature_file>
 #
 # This script is intended to be used by a mail client to get the public key for
 # a developer or maintainer in order to validate a signed message.
@@ -19,7 +19,25 @@
 # error prone.  I would not expect that case to come up, so it is not yet
 # handled.
 
-distro="debian"
+
+# Determine which distro is sent this message before even loading libraries
+# and/or configuration.
+#
+# This relies on the mail client to set the environment variable:
+# $from_address
+domain="${from_address##*@}"
+case "${domain}" in
+  'debian.org')
+    distro='debian'
+    ;;
+  'devuan.org')
+    distro='devuan'
+    ;;
+  *)
+    printf '%s\n' "Error:  Unhandled domain:  '${domain}'"
+    exit 1
+    ;;
+esac
 
 
 libs=(
@@ -34,9 +52,6 @@ if ! cd "${0%/bin/*}"; then
   printf '%s\n' 'Error:  Failed to enter project directory.'
   exit 1
 fi
-
-
-#printf '%s\n' "DEBUG:  PWD=='${PWD}'" >&2
 
 
 if ! source lib/source_libraries.sh; then
