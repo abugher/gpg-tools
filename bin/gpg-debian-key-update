@@ -1,9 +1,9 @@
 #!/bin/bash
 #
-# update-key-debian <signature_file>
+# gpg-debian-key-update <signature_file>
 #
-# This script is intended to be used by a mail client to get the public key for
-# a developer or maintainer in order to validate a signed message.
+# This script is intended to be used to get the public key for a developer or
+# maintainer in order to validate signed messages.
 #
 # This will automatically add and sign a key in the user-specific PGP keyring.
 # Scope should be limited to email addresses at a specific domain.
